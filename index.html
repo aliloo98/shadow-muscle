@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shadow Muscle</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#000000">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="app">
+        <header>
+            <h1>Shadow Muscle</h1>
+            <div id="level">Niv. <span id="currentLevel">1</span></div>
+            <div id="rank">Rang E - Survivant Potentiel</div>
+            <div id="streak" style="font-size: 0.9em; color: rgba(0,217,255,0.7); margin-top: 8px;">🔥 Streak: <span id="streakCount">0</span></div>
+        </header>
+        
+        <div id="xpBar">
+            <div id="xpProgress"></div>
+            <span id="xpText">0 / 500 XP</span>
+        </div>
+        
+        <section id="stats">
+            <h2>Stats</h2>
+            <div class="stat-grid">
+                <div class="stat"><span>Force</span><span id="force">1</span></div>
+                <div class="stat"><span>Endurance</span><span id="endurance">1</span></div>
+                <div class="stat"><span>Mental</span><span id="mental">1</span></div>
+                <div class="stat"><span>Discipline</span><span id="discipline">1</span></div>
+                <div class="stat"><span>Aura</span><span id="aura">1</span></div>
+            </div>
+        </section>
+        
+        <section id="missions">
+            <h2>Missions</h2>
+            <div id="dailyMissions"></div>
+            <div id="customMissions"></div>
+            <input type="text" id="newMission" placeholder="Nouvelle mission (ex: 50 pompes +2 Force)">
+            <button id="addMission">Ajouter</button>
+            <button id="enableNotifs" style="width: 100%; background: linear-gradient(90deg, #b700ff, #00d9ff); font-size: 0.9em; padding: 12px; margin-top: 16px;">🔔 Activer les notifications</button>
+        </section>
+        
+        <section id="levelUpPopup" class="hidden">
+            <div class="popup-content">
+                <h2>LEVEL UP !</h2>
+                <p id="levelUpText"></p>
+                <button id="closePopup">OK</button>
+            </div>
+        </section>
+    </div>
+    
+    <script src="app.js"></script>
+</body>
+</html>
