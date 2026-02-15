@@ -4,6 +4,7 @@
   "description": "Shadow Muscle - PWA de coaching musculaire (Vanilla JS, zero dependencies)",
   "main": "index.html",
   "scripts": {
-    "start": "python3 -m http.server 8000"
+    "start": "python3 -m http.server 8000",
+    "build": "echo 'Static PWA - no build required' && exit 0"
   }
 }
