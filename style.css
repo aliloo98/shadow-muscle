@@ -32,6 +32,8 @@ body {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     position: relative;
+    background-color: #020204 !important;
+    filter: brightness(0.95);
 }
 
 body::scroll-bg {
@@ -53,6 +55,7 @@ body::before {
     );
     pointer-events: none;
     z-index: -2;
+    background-color: rgba(2, 2, 4, 0.3);
 }
 
 body::after {
@@ -108,11 +111,96 @@ body::after {
     animation: rotate-shape 20s linear infinite reverse;
 }
 
+.shape.hex-3 {
+    width: 100px;
+    height: 100px;
+    top: 35%;
+    right: 5%;
+    border: 2px solid var(--accent-blue);
+    clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
+    animation: rotate-shape 18s linear infinite;
+}
+
+.shape.hex-4 {
+    width: 90px;
+    height: 90px;
+    top: 45%;
+    left: 10%;
+    border: 2px solid var(--accent-purple);
+    clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
+    animation: rotate-shape 22s linear infinite reverse;
+}
+
+.shape.hex-5 {
+    width: 95px;
+    height: 95px;
+    top: 68%;
+    left: 8%;
+    border: 2px solid var(--accent-blue);
+    clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
+    animation: rotate-shape 20s linear infinite;
+}
+
+.shape.hex-6 {
+    width: 110px;
+    height: 110px;
+    top: 75%;
+    right: 6%;
+    border: 2px solid var(--accent-purple);
+    clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
+    animation: rotate-shape 24s linear infinite reverse;
+}
+
+.shape.hex-7 {
+    width: 70px;
+    height: 70px;
+    top: 25%;
+    left: 40%;
+    border: 2px solid var(--accent-blue);
+    clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
+    opacity: 0.06;
+    animation: rotate-shape 17s linear infinite;
+}
+
+.shape.hex-8 {
+    width: 75px;
+    height: 75px;
+    top: 56%;
+    left: 45%;
+    border: 2px solid var(--accent-orange);
+    clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
+    opacity: 0.07;
+    animation: rotate-shape 19s linear infinite;
+}
+
+.shape.hex-9 {
+    width: 85px;
+    height: 85px;
+    top: 32%;
+    right: 35%;
+    border: 2px solid var(--accent-blue);
+    clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
+    opacity: 0.06;
+    animation: rotate-shape 21s linear infinite reverse;
+}
+
+.shape.hex-10 {
+    width: 65px;
+    height: 65px;
+    top: 78%;
+    left: 48%;
+    border: 2px solid var(--accent-purple);
+    clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
+    opacity: 0.08;
+    animation: rotate-shape 23s linear infinite;
+}
+
+/* Triangles */
 .shape.tri-1 {
     width: 0;
     height: 0;
-    top: 40%;
-    left: 8%;
+    top: 10%;
+    left: 28%;
     border-left: 50px solid transparent;
     border-right: 50px solid transparent;
     border-bottom: 85px solid var(--accent-orange);
@@ -123,7 +211,7 @@ body::after {
 .shape.tri-2 {
     width: 0;
     height: 0;
-    bottom: 20%;
+    top: 70%;
     right: 6%;
     border-left: 40px solid transparent;
     border-right: 40px solid transparent;
@@ -132,10 +220,107 @@ body::after {
     animation: pulse-shape 5s ease-in-out infinite reverse;
 }
 
+.shape.tri-3 {
+    width: 0;
+    height: 0;
+    top: 38%;
+    right: 12%;
+    border-left: 45px solid transparent;
+    border-right: 45px solid transparent;
+    border-bottom: 75px solid var(--accent-orange);
+    opacity: 0.12;
+    animation: pulse-shape 4.5s ease-in-out infinite;
+}
+
+.shape.tri-4 {
+    width: 0;
+    height: 0;
+    top: 50%;
+    left: 2%;
+    border-left: 35px solid transparent;
+    border-right: 35px solid transparent;
+    border-bottom: 60px solid var(--accent-blue);
+    opacity: 0.1;
+    animation: pulse-shape 5.5s ease-in-out infinite reverse;
+}
+
+.shape.tri-5 {
+    width: 0;
+    height: 0;
+    top: 70%;
+    right: 15%;
+    border-left: 50px solid transparent;
+    border-right: 50px solid transparent;
+    border-bottom: 80px solid var(--accent-orange);
+    opacity: 0.12;
+    animation: pulse-shape 4s ease-in-out infinite;
+}
+
+.shape.tri-6 {
+    width: 0;
+    height: 0;
+    top: 80%;
+    left: 5%;
+    border-left: 38px solid transparent;
+    border-right: 38px solid transparent;
+    border-bottom: 65px solid var(--accent-blue);
+    opacity: 0.1;
+    animation: pulse-shape 5.2s ease-in-out infinite reverse;
+}
+
+.shape.tri-7 {
+    width: 0;
+    height: 0;
+    top: 52%;
+    right: 30%;
+    border-left: 30px solid transparent;
+    border-right: 30px solid transparent;
+    border-bottom: 50px solid var(--accent-purple);
+    opacity: 0.08;
+    animation: pulse-shape 5.5s ease-in-out infinite;
+}
+
+.shape.tri-8 {
+    width: 0;
+    height: 0;
+    top: 28%;
+    left: 60%;
+    border-left: 42px solid transparent;
+    border-right: 42px solid transparent;
+    border-bottom: 72px solid var(--accent-orange);
+    opacity: 0.11;
+    animation: pulse-shape 4.2s ease-in-out infinite reverse;
+}
+
+.shape.tri-9 {
+    width: 0;
+    height: 0;
+    top: 62%;
+    left: 36%;
+    border-left: 36px solid transparent;
+    border-right: 36px solid transparent;
+    border-bottom: 62px solid var(--accent-purple);
+    opacity: 0.09;
+    animation: pulse-shape 5.3s ease-in-out infinite;
+}
+
+.shape.tri-10 {
+    width: 0;
+    height: 0;
+    top: 88%;
+    right: 25%;
+    border-left: 35px solid transparent;
+    border-right: 35px solid transparent;
+    border-bottom: 60px solid var(--accent-blue);
+    opacity: 0.1;
+    animation: pulse-shape 4.8s ease-in-out infinite reverse;
+}
+
+/* Squares */
 .shape.square-1 {
     width: 100px;
     height: 100px;
-    top: 60%;
+    top: 18%;
     left: 3%;
     border: 2px solid var(--accent-purple);
     transform: rotate(45deg);
@@ -145,17 +330,102 @@ body::after {
 .shape.square-2 {
     width: 70px;
     height: 70px;
-    bottom: 5%;
+    top: 80%;
     right: 4%;
     border: 2px solid var(--accent-orange);
     transform: rotate(-30deg);
     animation: float-shape 6s ease-in-out infinite;
 }
 
+.shape.square-3 {
+    width: 85px;
+    height: 85px;
+    top: 42%;
+    right: 25%;
+    border: 2px solid var(--accent-purple);
+    transform: rotate(25deg);
+    animation: rotate-shape 28s linear infinite;
+}
+
+.shape.square-4 {
+    width: 65px;
+    height: 65px;
+    top: 55%;
+    left: 20%;
+    border: 2px solid var(--accent-orange);
+    transform: rotate(-45deg);
+    animation: float-shape 7s ease-in-out infinite;
+}
+
+.shape.square-5 {
+    width: 80px;
+    height: 80px;
+    top: 72%;
+    left: 25%;
+    border: 2px solid var(--accent-purple);
+    transform: rotate(-20deg);
+    animation: rotate-shape 26s linear infinite;
+}
+
+.shape.square-6 {
+    width: 75px;
+    height: 75px;
+    top: 82%;
+    right: 12%;
+    border: 2px solid var(--accent-orange);
+    transform: rotate(35deg);
+    animation: float-shape 6.5s ease-in-out infinite;
+}
+
+.shape.square-7 {
+    width: 55px;
+    height: 55px;
+    top: 30%;
+    right: 40%;
+    border: 2px solid var(--accent-orange);
+    transform: rotate(15deg);
+    opacity: 0.06;
+    animation: rotate-shape 30s linear infinite reverse;
+}
+
+.shape.square-8 {
+    width: 90px;
+    height: 90px;
+    top: 48%;
+    left: 45%;
+    border: 2px solid var(--accent-blue);
+    transform: rotate(-15deg);
+    opacity: 0.07;
+    animation: rotate-shape 27s linear infinite;
+}
+
+.shape.square-9 {
+    width: 70px;
+    height: 70px;
+    top: 22%;
+    left: 52%;
+    border: 2px solid var(--accent-purple);
+    transform: rotate(50deg);
+    opacity: 0.08;
+    animation: float-shape 6.8s ease-in-out infinite reverse;
+}
+
+.shape.square-10 {
+    width: 60px;
+    height: 60px;
+    top: 65%;
+    right: 42%;
+    border: 2px solid var(--accent-orange);
+    transform: rotate(-35deg);
+    opacity: 0.07;
+    animation: rotate-shape 29s linear infinite;
+}
+
+/* Lines */
 .shape.line-1 {
     width: 150px;
     height: 2px;
-    top: 25%;
+    top: 20%;
     right: 15%;
     background: linear-gradient(90deg, transparent, var(--accent-blue), transparent);
     animation: pulse-shape 3s ease-in-out infinite;
@@ -164,17 +434,93 @@ body::after {
 .shape.line-2 {
     width: 120px;
     height: 2px;
-    bottom: 35%;
+    top: 70%;
     left: 12%;
     background: linear-gradient(90deg, transparent, var(--accent-purple), transparent);
     animation: pulse-shape 4s ease-in-out infinite reverse;
+}
+
+.shape.line-3 {
+    width: 140px;
+    height: 2px;
+    top: 48%;
+    left: 35%;
+    background: linear-gradient(90deg, transparent, var(--accent-blue), transparent);
+    animation: pulse-shape 3.5s ease-in-out infinite;
+}
+
+.shape.line-4 {
+    width: 130px;
+    height: 2px;
+    top: 60%;
+    right: 20%;
+    background: linear-gradient(90deg, transparent, var(--accent-purple), transparent);
+    animation: pulse-shape 4.5s ease-in-out infinite reverse;
+}
+
+.shape.line-5 {
+    width: 160px;
+    height: 2px;
+    top: 75%;
+    right: 25%;
+    background: linear-gradient(90deg, transparent, var(--accent-blue), transparent);
+    animation: pulse-shape 3.2s ease-in-out infinite;
+}
+
+.shape.line-6 {
+    width: 135px;
+    height: 2px;
+    top: 85%;
+    left: 15%;
+    background: linear-gradient(90deg, transparent, var(--accent-purple), transparent);
+    animation: pulse-shape 4.8s ease-in-out infinite reverse;
+}
+
+.shape.line-7 {
+    width: 180px;
+    height: 1.5px;
+    top: 56%;
+    left: 8%;
+    background: linear-gradient(90deg, transparent, var(--accent-blue), transparent);
+    opacity: 0.05;
+    animation: pulse-shape 3.8s ease-in-out infinite reverse;
+}
+
+.shape.line-8 {
+    width: 145px;
+    height: 2px;
+    top: 35%;
+    left: 25%;
+    background: linear-gradient(90deg, transparent, var(--accent-purple), transparent);
+    opacity: 0.06;
+    animation: pulse-shape 3.6s ease-in-out infinite;
+}
+
+.shape.line-9 {
+    width: 155px;
+    height: 2px;
+    top: 65%;
+    right: 35%;
+    background: linear-gradient(90deg, transparent, var(--accent-orange), transparent);
+    opacity: 0.07;
+    animation: pulse-shape 4.1s ease-in-out infinite reverse;
+}
+
+.shape.line-10 {
+    width: 170px;
+    height: 1.5px;
+    top: 42%;
+    right: 10%;
+    background: linear-gradient(90deg, transparent, var(--accent-blue), transparent);
+    opacity: 0.06;
+    animation: pulse-shape 3.4s ease-in-out infinite;
 }
 
 #app {
     max-width: 420px;
     margin: 28px auto;
     padding: 22px;
-    background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.005));
+    background: linear-gradient(180deg, rgba(5,4,9,0.99), rgba(5,4,9,0.99));
     border-radius: 14px;
     box-shadow: 
         0 0 50px rgba(0,217,255,0.35),
@@ -184,7 +530,7 @@ body::after {
         inset 0 0 20px rgba(183,0,255,0.04);
     border: 2px solid transparent;
     background-image: 
-        linear-gradient(rgba(5,4,9,0.98), rgba(5,4,9,0.98)),
+        linear-gradient(rgba(5,4,9,0.99), rgba(5,4,9,0.99)),
         linear-gradient(135deg, var(--accent-blue), var(--accent-purple), transparent);
     background-origin: border-box;
     background-clip: padding-box, border-box;
