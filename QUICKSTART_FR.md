@@ -111,20 +111,24 @@ Aura: 1         ← Augmente avec les défis
 
 ### **Missions Hebdomadaires** 🔥
 ```
-1. Compléter 5 jours      [0/5] [Compléter]
-2. Total 300 pompes       [47/300] [Compléter]
-3. Total 500 squats       [156/500] [Compléter]
+1. Compléter 5 jours d'entraînement cette semaine    [0/5]     → +500 XP, +1 à toutes les stats
+    (ex: 3/5 jours complétés)
+2. Total 100 pompes cette semaine                     [0/100]   → +200 XP, +2 Force
+    (ex: 45/100 pompes)
+3. Total 200 squats cette semaine                     [0/200]   → +250 XP, +2 Endurance
+    (ex: 160/200 squats)
 
-Disponibilité: Semaine entière (lundi-dimanche)
+Réinitialisation: Chaque lundi (semaine calculée à partir du lundi)
 ```
 
 ### **Défis Mensuels** 🏆
 ```
-1. "30 jours sans pause"  [0/30] [Compléter]
-2. "Progression pompes"   [0/1] [Compléter]
-3. "Atteindre Rang sup."  [0/1] [Compléter]
+1. Maintenir un streak de 7 jours                      [0/7]     → +800 XP, +3 Mental
+    (ex: 4/7 jours)
+2. Maintenir un streak de 30 jours                     [0/30]    → +3000 XP, +10 à toutes les stats, Badge "🏆 Discipliné"
+    (ex: 12/30 jours)
 
-Disponibilité: Tout le mois
+Réinitialisation: Chaque 1er du mois
 ```
 
 ---

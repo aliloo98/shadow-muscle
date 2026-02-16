@@ -9,7 +9,7 @@ class ShadowMuscle {
         this.lastMissionDay = localStorage.getItem('lastMissionDay') || null;
         
         // Système de tracking d'exercices
-        this.exercisesThisWeek = JSON.parse(localStorage.getItem('exercisesThisWeek')) || { pushups: 0, squats: 0, other: 0, week: this.getWeekNumber() };
+        this.exercisesThisWeek = JSON.parse(localStorage.getItem('exercisesThisWeek')) || { pushups: 0, squats: 0, other: 0, week: this.getISOWeekNumber() };
         this.exercisesThisMonth = JSON.parse(localStorage.getItem('exercisesThisMonth')) || { pushups: 0, squats: 0, other: 0, month: new Date().getMonth() };
         this.weeklyMissions = [];
         this.monthlyMissions = [];
@@ -51,7 +51,7 @@ class ShadowMuscle {
         
         // Charger le tracking d'exercices
         const weekData = JSON.parse(localStorage.getItem('exercisesThisWeek'));
-        const currentWeek = this.getWeekNumber();
+        const currentWeek = this.getISOWeekNumber();
         this.exercisesThisWeek = (weekData && weekData.week === currentWeek) ? weekData : { pushups: 0, squats: 0, other: 0, week: currentWeek };
         
         const monthData = JSON.parse(localStorage.getItem('exercisesThisMonth'));
@@ -60,6 +60,8 @@ class ShadowMuscle {
         
         this.completedWeeklyMissions = JSON.parse(localStorage.getItem('completedWeeklyMissions')) || {};
         this.completedMonthlyMissions = JSON.parse(localStorage.getItem('completedMonthlyMissions')) || {};
+        // Notifications flag
+        this.notificationsEnabled = localStorage.getItem('notificationsEnabled') === '1';
     }
 
     saveData() {
@@ -246,11 +248,15 @@ class ShadowMuscle {
         this.updateMissionsUI();
     }
 
-    getWeekNumber() {
-        const d = new Date();
-        const firstDayOfYear = new Date(d.getFullYear(), 0, 1);
-        const pastDaysOfYear = (d - firstDayOfYear) / 86400000;
-        return Math.ceil((pastDaysOfYear + firstDayOfYear.getDay() + 1) / 7);
+    // Retourne le numéro ISO de la semaine (lundi = début de semaine)
+    getISOWeekNumber() {
+        const date = new Date();
+        const target = new Date(date.valueOf());
+        const dayNr = (date.getDay() + 6) % 7; // Lundi=0, Dimanche=6
+        target.setDate(target.getDate() - dayNr + 3);
+        const firstThursday = new Date(target.getFullYear(), 0, 4);
+        const diff = target - firstThursday;
+        return 1 + Math.round(diff / 86400000 / 7);
     }
 
     generateWeeklyMissions() {
@@ -258,61 +264,49 @@ class ShadowMuscle {
             { 
                 name: 'Compléter 5 jours d\'entraînement', 
                 xp: 500, 
-                boost: { force: 5, endurance: 5, mental: 5, discipline: 5, aura: 5 },
+                boost: { force: 1, endurance: 1, mental: 1, discipline: 1, aura: 1 },
                 progress: this.missionStreak,
                 goal: 5,
                 id: 'weekly-5days'
             },
             { 
-                name: 'Total 300 pompes/semaine', 
-                xp: 300, 
-                boost: { force: 5 },
+                name: 'Total 100 pompes cette semaine', 
+                xp: 200, 
+                boost: { force: 2 },
                 progress: this.getTotalPushupWeek(),
-                goal: 300,
+                goal: 100,
                 id: 'weekly-pushups'
             },
             { 
-                name: 'Total 500 squats/semaine', 
-                xp: 350, 
-                boost: { endurance: 5 },
+                name: 'Total 200 squats cette semaine', 
+                xp: 250, 
+                boost: { endurance: 2 },
                 progress: this.getTotalSquatsWeek(),
-                goal: 500,
+                goal: 200,
                 id: 'weekly-squats'
             }
         ];
     }
 
     generateMonthlyMissions() {
-        const today = new Date();
-        const daysInMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
-        
+        // Mensuels demandés: streak 7 jours et streak 30 jours
         this.monthlyMissions = [
             { 
-                name: '30 jours sans pause', 
-                xp: 2000, 
-                boost: { discipline: 10, aura: 10 },
-                progress: this.missionStreak >= 30 ? 30 : this.missionStreak,
+                name: 'Maintenir un streak de 7 jours', 
+                xp: 800, 
+                boost: { mental: 3 },
+                progress: Math.min(this.missionStreak, 7),
+                goal: 7,
+                id: 'monthly-streak-7'
+            },
+            { 
+                name: 'Maintenir un streak de 30 jours', 
+                xp: 3000, 
+                boost: { force: 10, endurance: 10, mental: 10, discipline: 10, aura: 10 },
+                progress: Math.min(this.missionStreak, 30),
                 goal: 30,
-                id: 'monthly-30days',
-                badge: '🏆 Discipline'
-            },
-            { 
-                name: 'Progression pompes (20→50 d\'affilée)', 
-                xp: 1500, 
-                boost: { force: 10 },
-                progress: this.stats.force >= 10 ? 1 : 0,
-                goal: 1,
-                id: 'monthly-pushup-progression',
-                badge: '💪 Progression'
-            },
-            { 
-                name: 'Atteindre Rang supérieur', 
-                xp: 1800, 
-                boost: { aura: 8, discipline: 8 },
-                progress: 0,
-                goal: 1,
-                id: 'monthly-rank-up',
-                badge: '⚡ Rang Supérieur'
+                id: 'monthly-streak-30',
+                badge: '🏆 Discipliné'
             }
         ];
     }
@@ -383,10 +377,12 @@ class ShadowMuscle {
         
         // Vérifier si la semaine a changé
         const weekData = JSON.parse(localStorage.getItem('exercisesThisWeek'));
-        const currentWeek = this.getWeekNumber();
+        const currentWeek = this.getISOWeekNumber();
         if (!weekData || weekData.week !== currentWeek) {
             this.exercisesThisWeek = { pushups: 0, squats: 0, other: 0, week: currentWeek };
             this.completedWeeklyMissions = {};
+            this.saveData();
+            this.sendSystemNotification('Missions hebdomadaires réinitialisées', 'Les objectifs hebdomadaires ont été réinitialisés pour la nouvelle semaine.', { tag: 'weekly-reset' });
         }
         
         // Vérifier si le mois a changé
@@ -395,6 +391,8 @@ class ShadowMuscle {
         if (!monthData || monthData.month !== currentMonth) {
             this.exercisesThisMonth = { pushups: 0, squats: 0, other: 0, month: currentMonth };
             this.completedMonthlyMissions = {};
+            this.saveData();
+            this.sendSystemNotification('Défis mensuels réinitialisés', 'Les défis mensuels ont été réinitialisés pour le nouveau mois.', { tag: 'monthly-reset' });
         }
         
         // Gérer le streak
@@ -521,6 +519,8 @@ class ShadowMuscle {
         notif.innerHTML = `<span style="font-size:1.3em;">🔥</span><br>STREAK +1 !<br><strong>${this.missionStreak} jours</strong>`;
         document.body.appendChild(notif);
         setTimeout(() => notif.remove(), 3000);
+        // System notification
+        this.sendSystemNotification('Streak +1 !', `🔥 Streak: ${this.missionStreak} jours`, { tag: 'streak' });
     }
 
     showStreakBrokenNotification() {
@@ -543,6 +543,8 @@ class ShadowMuscle {
         notif.textContent = '💔 Ton streak est tombée... Relève-toi, Combattant!';
         document.body.appendChild(notif);
         setTimeout(() => notif.remove(), 4000);
+        // System notification
+        this.sendSystemNotification('Streak interrompu', '💔 Ton streak est tombée. Reviens plus fort !', { tag: 'streak-broken' });
     }
 
     showMissionCompleted(mission) {
@@ -566,6 +568,10 @@ class ShadowMuscle {
         msgDiv.textContent = `✓ ${mission.name}\nCOMPLÉTÉE!`;
         document.body.appendChild(msgDiv);
         setTimeout(() => msgDiv.remove(), 2000);
+        // System notification
+        const title = mission.name ? `Mission complétée` : 'Mission';
+        const body = mission.name ? `${mission.name} — +${mission.xp || 0} XP` : 'Mission complétée';
+        this.sendSystemNotification(title, body, { tag: 'mission-completed' });
     }
 
     updateUI() {
@@ -669,6 +675,7 @@ class ShadowMuscle {
 
             // Toast de confirmation
             this.showNotificationSuccess('Notifications activées ! ✅');
+            localStorage.setItem('notificationsEnabled', '1');
         } catch (error) {
             console.error('Erreur lors de l\'activation des notifications:', error);
             alert('Erreur: ' + error.message);
@@ -695,6 +702,26 @@ class ShadowMuscle {
         notif.textContent = message;
         document.body.appendChild(notif);
         setTimeout(() => notif.remove(), 3000);
+    }
+
+    // Envoie une notification système (Service Worker si dispo, sinon Notification API)
+    async sendSystemNotification(title, body, options = {}) {
+        try {
+            if (!('Notification' in window)) return;
+            if (Notification.permission !== 'granted') return;
+
+            // Prioriser Service Worker notifications lorsque disponible
+            if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+                const registration = await navigator.serviceWorker.ready;
+                registration.showNotification(title, Object.assign({ body, tag: options.tag || title, icon: './icon-192.png', badge: './icon-192.png' }, options));
+                return;
+            }
+
+            // Fallback direct
+            new Notification(title, Object.assign({ body, icon: './icon-192.png', tag: options.tag || title }, options));
+        } catch (e) {
+            console.error('sendSystemNotification error', e);
+        }
     }
 }
 
