@@ -7,6 +7,15 @@ class ShadowMuscle {
         this.customMissions = JSON.parse(localStorage.getItem('customMissions')) || [];
         this.missionStreak = parseInt(localStorage.getItem('missionStreak')) || 0;
         this.lastMissionDay = localStorage.getItem('lastMissionDay') || null;
+        
+        // Système de tracking d'exercices
+        this.exercisesThisWeek = JSON.parse(localStorage.getItem('exercisesThisWeek')) || { pushups: 0, squats: 0, other: 0, week: this.getWeekNumber() };
+        this.exercisesThisMonth = JSON.parse(localStorage.getItem('exercisesThisMonth')) || { pushups: 0, squats: 0, other: 0, month: new Date().getMonth() };
+        this.weeklyMissions = [];
+        this.monthlyMissions = [];
+        this.completedWeeklyMissions = JSON.parse(localStorage.getItem('completedWeeklyMissions')) || {};
+        this.completedMonthlyMissions = JSON.parse(localStorage.getItem('completedMonthlyMissions')) || {};
+        
         this.init();
     }
 
@@ -15,6 +24,8 @@ class ShadowMuscle {
         this.registerSW();
         this.updateUI();
         this.generateDailyMissions();
+        this.generateWeeklyMissions();
+        this.generateMonthlyMissions();
         this.bindEvents();
         this.updateDaily();
         this.showDailYGreeting();
@@ -37,6 +48,18 @@ class ShadowMuscle {
         }
         this.missionStreak = parseInt(localStorage.getItem('missionStreak')) || 0;
         this.lastMissionDay = localStorage.getItem('lastMissionDay') || null;
+        
+        // Charger le tracking d'exercices
+        const weekData = JSON.parse(localStorage.getItem('exercisesThisWeek'));
+        const currentWeek = this.getWeekNumber();
+        this.exercisesThisWeek = (weekData && weekData.week === currentWeek) ? weekData : { pushups: 0, squats: 0, other: 0, week: currentWeek };
+        
+        const monthData = JSON.parse(localStorage.getItem('exercisesThisMonth'));
+        const currentMonth = new Date().getMonth();
+        this.exercisesThisMonth = (monthData && monthData.month === currentMonth) ? monthData : { pushups: 0, squats: 0, other: 0, month: currentMonth };
+        
+        this.completedWeeklyMissions = JSON.parse(localStorage.getItem('completedWeeklyMissions')) || {};
+        this.completedMonthlyMissions = JSON.parse(localStorage.getItem('completedMonthlyMissions')) || {};
     }
 
     saveData() {
@@ -48,36 +71,41 @@ class ShadowMuscle {
         }));
         localStorage.setItem('missionStreak', this.missionStreak);
         localStorage.setItem('lastMissionDay', this.lastMissionDay);
+        localStorage.setItem('exercisesThisWeek', JSON.stringify(this.exercisesThisWeek));
+        localStorage.setItem('exercisesThisMonth', JSON.stringify(this.exercisesThisMonth));
+        localStorage.setItem('completedWeeklyMissions', JSON.stringify(this.completedWeeklyMissions));
+        localStorage.setItem('completedMonthlyMissions', JSON.stringify(this.completedMonthlyMissions));
     }
 
     getXpForLevel(level) {
-        return 500 + (level * 150);
+        return 400 + (level * 100);
     }
 
     getRank(level) {
-        if (level === 100) return 'Shadow Monarch - La Résurrection';
-        if (level >= 80) return 'S - Souverain de l\'Abysse';
-        if (level >= 60) return 'A - Éveillé du Pouvoir';
-        if (level >= 40) return 'B - Elite de Combat';
-        if (level >= 20) return 'C - Hunter Avancé';
-        if (level >= 10) return 'D - Combattant Marqué';
-        return 'E - Survivant Potentiel';
+        if (level >= 81) return 'S - Légende du Bodyweight';
+        if (level >= 51) return 'A - Maître';
+        if (level >= 31) return 'B - Expert';
+        if (level >= 16) return 'C - Avancé';
+        if (level >= 6) return 'D - Intermédiaire';
+        return 'E - Débutant';
+    }
+
+    getRankBounds(level) {
+        if (level >= 81) return { rank: 'S', minLevel: 81, maxLevel: Infinity };
+        if (level >= 51) return { rank: 'A', minLevel: 51, maxLevel: 80 };
+        if (level >= 31) return { rank: 'B', minLevel: 31, maxLevel: 50 };
+        if (level >= 16) return { rank: 'C', minLevel: 16, maxLevel: 30 };
+        if (level >= 6) return { rank: 'D', minLevel: 6, maxLevel: 15 };
+        return { rank: 'E', minLevel: 1, maxLevel: 5 };
     }
 
     getLevelUpMessage(level) {
         const messages = {
-            5: "Ton énergie s'accroît... L'Abysse te reconnaît.",
-            10: "Tu franchis le seuil du D-Rank. Un combattant véritable émerge.",
-            15: "La marque de la puissance s'enfonce en toi.",
-            20: "C-Rank atteint. Tu n'es plus un simple survivant.",
-            30: "Ta progression devient remarquable. Continue à grimper.",
-            40: "B-Rank ! Tu joins les élites de ce monde.",
-            50: "Tu dépasses les limites humaines ordinaires.",
-            60: "A-Rank ! Tu es désormais un Awakened. Le pouvoir coule en toi.",
-            70: "Ton aura dépasse l'entendement. L'ascension est inévitable.",
-            80: "S-Rank ! Tu es un Souverain. Peu peuvent te défier.",
-            90: "Approche du sommet... Shadow Monarch se fait proche.",
-            100: "SHADOW MONARCH - Tu as atteint le pouvoir ultime. La Résurrection complète."
+            6: "🔥 Passage au Rang D - Tu entres dans le sérieux de l'entraînement.",
+            16: "⚡ Passage au Rang C - Ta puissance devient remarquable.",
+            31: "💪 Passage au Rang B - Tu joins les experts du bodyweight.",
+            51: "🏆 Passage au Rang A - Tu es un Maître de ton corps.",
+            81: "👑 Passage au Rang S - Tu es une Légende du Bodyweight!"
         };
         return messages[level] || `Niveau ${level} atteint ! Continue ton ascension...`;
     }
@@ -152,37 +180,195 @@ class ShadowMuscle {
         document.getElementById('closePopup').onclick = () => popup.classList.add('hidden');
     }
 
+    getExercisesByRank(level) {
+        // Retourner les exercices basés sur le rang actuel
+        if (level >= 81) {
+            // Rang S (Légende) - Niv. 81+
+            return [
+                { name: '10 pompes d\'un bras', xp: 500, boost: { force: 10 }, category: 'Force' },
+                { name: '50 squats pistol d\'une jambe', xp: 550, boost: { endurance: 10 }, category: 'Endurance' },
+                { name: '180 sec hollow body hold', xp: 600, boost: { mental: 10 }, category: 'Mental' },
+                { name: 'Défi légendaire complet', xp: 700, boost: { force: 5, endurance: 5, mental: 5, discipline: 5, aura: 5 }, category: 'Complet' }
+            ];
+        } else if (level >= 51) {
+            // Rang A (Maître) - Niv. 51-80
+            return [
+                { name: '20 pompes archer', xp: 300, boost: { force: 6 }, category: 'Force' },
+                { name: '100 squats pistol', xp: 320, boost: { endurance: 6 }, category: 'Endurance' },
+                { name: '120 sec hollow body hold', xp: 280, boost: { mental: 5 }, category: 'Mental' },
+                { name: '30 handstand push-ups (mur)', xp: 250, boost: { force: 5 }, category: 'Force' },
+                { name: '50 pistol squats alternés', xp: 220, boost: { endurance: 4 }, category: 'Endurance' }
+            ];
+        } else if (level >= 31) {
+            // Rang B (Expert) - Niv. 31-50
+            return [
+                { name: '40 pompes claquées', xp: 200, boost: { force: 4 }, category: 'Force' },
+                { name: '50 pistol squats alternés', xp: 220, boost: { endurance: 4 }, category: 'Endurance' },
+                { name: '90 sec planche + mouvements', xp: 180, boost: { mental: 3 }, category: 'Mental' },
+                { name: '30 handstand push-ups (mur)', xp: 250, boost: { force: 5 }, category: 'Force' },
+                { name: '40 fentes alternées', xp: 130, boost: { endurance: 2 }, category: 'Endurance' }
+            ];
+        } else if (level >= 16) {
+            // Rang C (Avancé) - Niv. 16-30
+            return [
+                { name: '30 pompes diamant', xp: 150, boost: { force: 3 }, category: 'Force' },
+                { name: '100 squats jump', xp: 170, boost: { endurance: 3 }, category: 'Endurance' },
+                { name: '60 sec planche variations', xp: 120, boost: { mental: 2 }, category: 'Mental' },
+                { name: '50 dips sur chaise', xp: 140, boost: { force: 3 }, category: 'Force' },
+                { name: '40 fentes alternées', xp: 130, boost: { endurance: 2 }, category: 'Endurance' }
+            ];
+        } else if (level >= 6) {
+            // Rang D (Intermédiaire) - Niv. 6-15
+            return [
+                { name: '50 pompes (3 séries)', xp: 100, boost: { force: 2 }, category: 'Force' },
+                { name: '75 squats', xp: 110, boost: { endurance: 2 }, category: 'Endurance' },
+                { name: '45 sec planche', xp: 80, boost: { mental: 1 }, category: 'Mental' },
+                { name: '30 mountain climbers', xp: 90, boost: { force: 2 }, category: 'Force' },
+                { name: '20 burpees', xp: 120, boost: { endurance: 2 }, category: 'Endurance' }
+            ];
+        } else {
+            // Rang E (Débutant) - Niv. 1-5
+            return [
+                { name: '20 pompes (genoux si besoin)', xp: 50, boost: { force: 1 }, category: 'Force' },
+                { name: '30 squats', xp: 60, boost: { endurance: 1 }, category: 'Endurance' },
+                { name: '20 sec planche', xp: 40, boost: { mental: 1 }, category: 'Mental' },
+                { name: 'Étirements 5 min', xp: 30, boost: { discipline: 1 }, category: 'Discipline' }
+            ];
+        }
+    }
+
     generateDailyMissions() {
-        // Pool de missions variées avec difficulté progressive
-        const exercises = [
-            // Basique Force
-            { name: '50 pompes', xp: 100, boost: { force: 1 } },
-            { name: '30 pompes explosives', xp: 110, boost: { force: 2, aura: 1 } },
-            { name: '100 pompes d\'une main', xp: 200, boost: { force: 3 } },
-            
-            // Basique Endurance
-            { name: '100 squats', xp: 120, boost: { endurance: 1 } },
-            { name: '50 squats profonds', xp: 140, boost: { endurance: 2, mental: 1 } },
-            { name: '200 squats', xp: 180, boost: { endurance: 3 } },
-            
-            // Mental
-            { name: '30 min méditation', xp: 80, boost: { mental: 1 } },
-            { name: '1h de lecture "Solo Leveling"', xp: 120, boost: { mental: 2, discipline: 1 } },
-            { name: '30 min yoga', xp: 90, boost: { mental: 1, endurance: 1 } },
-            
-            // Discipline & Aura
-            { name: '20 min shadow boxing', xp: 150, boost: { discipline: 2, aura: 1 } },
-            { name: '30 min sparring', xp: 170, boost: { discipline: 2, force: 1, aura: 2 } },
-            { name: '15 min cardio intensif', xp: 130, boost: { endurance: 2, discipline: 1 } },
-            
-            // Combo puissant
-            { name: 'Full Body Workout', xp: 250, boost: { force: 1, endurance: 1, mental: 1, discipline: 1, aura: 1 } },
-            { name: 'Défi matinal', xp: 160, boost: { discipline: 2, force: 1, aura: 1 } },
-        ];
+        // Générer à partir des exercices du rang actuel
+        const exercises = this.getExercisesByRank(this.currentLevel);
         
-        // Sélectionner 3 missions aléatoires
+        // Sélectionner 3 missions aléatoires du rang
         this.dailyMissions = exercises.sort(() => Math.random() - 0.5).slice(0, 3);
         this.updateMissionsUI();
+    }
+
+    getWeekNumber() {
+        const d = new Date();
+        const firstDayOfYear = new Date(d.getFullYear(), 0, 1);
+        const pastDaysOfYear = (d - firstDayOfYear) / 86400000;
+        return Math.ceil((pastDaysOfYear + firstDayOfYear.getDay() + 1) / 7);
+    }
+
+    generateWeeklyMissions() {
+        this.weeklyMissions = [
+            { 
+                name: 'Compléter 5 jours d\'entraînement', 
+                xp: 500, 
+                boost: { force: 5, endurance: 5, mental: 5, discipline: 5, aura: 5 },
+                progress: this.missionStreak,
+                goal: 5,
+                id: 'weekly-5days'
+            },
+            { 
+                name: 'Total 300 pompes/semaine', 
+                xp: 300, 
+                boost: { force: 5 },
+                progress: this.getTotalPushupWeek(),
+                goal: 300,
+                id: 'weekly-pushups'
+            },
+            { 
+                name: 'Total 500 squats/semaine', 
+                xp: 350, 
+                boost: { endurance: 5 },
+                progress: this.getTotalSquatsWeek(),
+                goal: 500,
+                id: 'weekly-squats'
+            }
+        ];
+    }
+
+    generateMonthlyMissions() {
+        const today = new Date();
+        const daysInMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
+        
+        this.monthlyMissions = [
+            { 
+                name: '30 jours sans pause', 
+                xp: 2000, 
+                boost: { discipline: 10, aura: 10 },
+                progress: this.missionStreak >= 30 ? 30 : this.missionStreak,
+                goal: 30,
+                id: 'monthly-30days',
+                badge: '🏆 Discipline'
+            },
+            { 
+                name: 'Progression pompes (20→50 d\'affilée)', 
+                xp: 1500, 
+                boost: { force: 10 },
+                progress: this.stats.force >= 10 ? 1 : 0,
+                goal: 1,
+                id: 'monthly-pushup-progression',
+                badge: '💪 Progression'
+            },
+            { 
+                name: 'Atteindre Rang supérieur', 
+                xp: 1800, 
+                boost: { aura: 8, discipline: 8 },
+                progress: 0,
+                goal: 1,
+                id: 'monthly-rank-up',
+                badge: '⚡ Rang Supérieur'
+            }
+        ];
+    }
+
+    getTotalPushupWeek() {
+        // Total de pompes cette semaine (simulation, à tracker dans completeMission)
+        return this.exercisesThisWeek.pushups || 0;
+    }
+
+    getTotalSquatsWeek() {
+        // Total de squats cette semaine
+        return this.exercisesThisWeek.squats || 0;
+    }
+
+    completeWeeklyMission(missionId) {
+        const mission = this.weeklyMissions.find(m => m.id === missionId);
+        if (mission && mission.progress >= mission.goal) {
+            if (!this.completedWeeklyMissions[missionId]) {
+                this.completedWeeklyMissions[missionId] = true;
+                this.addXP(mission.xp, mission.boost);
+                this.showMissionCompleted({ name: '✓ Mission Hebdo: ' + mission.name });
+                this.saveData();
+            }
+        }
+    }
+
+    completeMonthlyMission(missionId) {
+        const mission = this.monthlyMissions.find(m => m.id === missionId);
+        if (mission && mission.progress >= mission.goal) {
+            if (!this.completedMonthlyMissions[missionId]) {
+                this.completedMonthlyMissions[missionId] = true;
+                this.addXP(mission.xp, mission.boost);
+                this.showMissionCompleted({ name: '✓ Défi Mensuel: ' + mission.name + ' ' + mission.badge });
+                this.saveData();
+            }
+        }
+    }
+
+    updateWeeklyMissions() {
+        this.generateWeeklyMissions();
+        // Vérifier automatiquement les missions complétées
+        this.weeklyMissions.forEach(mission => {
+            if (mission.progress >= mission.goal) {
+                this.completeWeeklyMission(mission.id);
+            }
+        });
+    }
+
+    updateMonthlyMissions() {
+        this.generateMonthlyMissions();
+        // Vérifier automatiquement les missions complétées
+        this.monthlyMissions.forEach(mission => {
+            if (mission.progress >= mission.goal) {
+                this.completeMonthlyMission(mission.id);
+            }
+        });
     }
 
     updateDaily() {
@@ -193,6 +379,22 @@ class ShadowMuscle {
         if (lastDaily !== today) {
             this.generateDailyMissions();
             localStorage.setItem('lastDaily', today);
+        }
+        
+        // Vérifier si la semaine a changé
+        const weekData = JSON.parse(localStorage.getItem('exercisesThisWeek'));
+        const currentWeek = this.getWeekNumber();
+        if (!weekData || weekData.week !== currentWeek) {
+            this.exercisesThisWeek = { pushups: 0, squats: 0, other: 0, week: currentWeek };
+            this.completedWeeklyMissions = {};
+        }
+        
+        // Vérifier si le mois a changé
+        const monthData = JSON.parse(localStorage.getItem('exercisesThisMonth'));
+        const currentMonth = new Date().getMonth();
+        if (!monthData || monthData.month !== currentMonth) {
+            this.exercisesThisMonth = { pushups: 0, squats: 0, other: 0, month: currentMonth };
+            this.completedMonthlyMissions = {};
         }
         
         // Gérer le streak
@@ -248,6 +450,9 @@ class ShadowMuscle {
             mission.done = true;
             this.addXP(mission.xp, mission.boost);
             
+            // Tracker les exercices (détecter le type à partir du nom)
+            this.trackExercise(mission.name);
+            
             // Vérifier si toutes les missions quotidiennes sont complétées
             if (isDaily && this.allDailyMissionsCompleted()) {
                 this.missionStreak += 1;
@@ -255,10 +460,40 @@ class ShadowMuscle {
                 localStorage.setItem('lastStreakDay', new Date().toDateString());
             }
             
+            // Mettre à jour automatiquement les missions hebdomadaires et mensuelles
+            this.updateWeeklyMissions();
+            this.updateMonthlyMissions();
+            
             // Créer une animation de complétion
             this.showMissionCompleted(mission);
             this.updateMissionsUI();
             this.saveData();
+        }
+    }
+
+    trackExercise(exerciseName) {
+        const name = exerciseName.toLowerCase();
+        
+        // Détecter les pompes
+        if (name.includes('pompe')) {
+            const match = name.match(/(\d+)/);
+            const count = match ? parseInt(match[1]) : 10;
+            this.exercisesThisWeek.pushups += count;
+            this.exercisesThisMonth.pushups += count;
+        }
+        
+        // Détecter les squats
+        if (name.includes('squat')) {
+            const match = name.match(/(\d+)/);
+            const count = match ? parseInt(match[1]) : 15;
+            this.exercisesThisWeek.squats += count;
+            this.exercisesThisMonth.squats += count;
+        }
+        
+        // Autres exercices
+        if (name.includes('burpee') || name.includes('mountain climber') || name.includes('dip') || name.includes('fente')) {
+            this.exercisesThisWeek.other += 10;
+            this.exercisesThisMonth.other += 10;
         }
     }
 
@@ -347,19 +582,45 @@ class ShadowMuscle {
         document.getElementById('mental').textContent = this.stats.mental;
         document.getElementById('discipline').textContent = this.stats.discipline;
         document.getElementById('aura').textContent = this.stats.aura;
+        
+        // Mettre à jour les missions
+        this.updateMissionsUI();
     }
 
     updateMissionsUI() {
         const dailyDiv = document.getElementById('dailyMissions');
-        dailyDiv.innerHTML = '<h3>Quotidiennes</h3>' + this.dailyMissions.map((m, i) => `
+        dailyDiv.innerHTML = this.dailyMissions.map((m, i) => `
             <div class="mission ${m.done ? 'done' : ''}">
                 <span>${m.name} <span class="xp-badge">+${m.xp} XP</span></span>
                 <button onclick="app.completeMission(${i}, true)" class="mission-btn">${m.done ? '✓ Fait' : 'Compléter'}</button>
             </div>
         `).join('');
 
+        const weeklyDiv = document.getElementById('weeklyMissions');
+        weeklyDiv.innerHTML = this.weeklyMissions.map((m, i) => {
+            const isCompleted = this.completedWeeklyMissions[m.id];
+            return `
+            <div class="mission ${isCompleted ? 'done' : ''}">
+                <span>${m.name} <span class="xp-badge">+${m.xp} XP</span></span>
+                <div class="mission-progress" style="font-size: 0.85em; color: #7fff00; margin: 4px 0;">${m.progress}/${m.goal}</div>
+                <button onclick="app.completeWeeklyMission('${m.id}')" class="mission-btn ${isCompleted ? 'disabled' : ''}" ${isCompleted ? 'disabled' : ''}>${isCompleted ? '✓ Complétée' : 'Compléter'}</button>
+            </div>
+        `}).join('');
+
+        const monthlyDiv = document.getElementById('monthlyMissions');
+        monthlyDiv.innerHTML = this.monthlyMissions.map((m, i) => {
+            const isCompleted = this.completedMonthlyMissions[m.id];
+            return `
+            <div class="mission ${isCompleted ? 'done' : ''}">
+                <span>${m.name} <span class="xp-badge">+${m.xp} XP</span></span>
+                ${m.badge ? `<div style="font-size: 0.85em; color: #ff7a18; margin: 4px 0;">${m.badge}</div>` : ''}
+                <div class="mission-progress" style="font-size: 0.85em; color: #b700ff; margin: 4px 0;">${m.progress}/${m.goal}</div>
+                <button onclick="app.completeMonthlyMission('${m.id}')" class="mission-btn ${isCompleted ? 'disabled' : ''}" ${isCompleted ? 'disabled' : ''}>${isCompleted ? '✓ Complétée' : 'Compléter'}</button>
+            </div>
+        `}).join('');
+
         const customDiv = document.getElementById('customMissions');
-        customDiv.innerHTML = '<h3>Personnalisées</h3>' + this.customMissions.map((m, i) => `
+        customDiv.innerHTML = this.customMissions.map((m, i) => `
             <div class="mission ${m.done ? 'done' : ''}">
                 <span>${m.name} <span class="xp-badge">+${m.xp} XP</span></span>
                 <button onclick="app.completeMission(${i}, false)" class="mission-btn">${m.done ? '✓ Fait' : 'Compléter'}</button>

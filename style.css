@@ -931,7 +931,22 @@ h2::before {
     box-shadow: 0 6px 20px rgba(255,90,60,0.12), 0 0 20px rgba(255,60,50,0.06);
     transition: all 160ms ease;
 }
+
+.mission-btn:hover:not(:disabled) {
     transform: translateX(4px);
+    box-shadow: 0 8px 24px rgba(255,90,60,0.25);
+}
+
+.mission-btn:disabled {
+    background: linear-gradient(90deg, #333, #444);
+    cursor: not-allowed;
+    opacity: 0.6;
+    box-shadow: 0 6px 20px rgba(100,100,100,0.1);
+}
+
+.mission-progress {
+    display: inline-block;
+    font-weight: 700;
 }
 .mission span { position: relative; z-index: 1; }
 .mission button { 
