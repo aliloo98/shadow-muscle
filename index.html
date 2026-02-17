@@ -6,55 +6,13 @@
     <title>Shadow Muscle</title>
     <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" href="icon-192.png">
-    <meta name="apple-mobile-web-app-capable" content="yes">style.css?v=3.1"></head>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#000000">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css?v=3.1">
+</head>
 <body>
-    <div class="geom-shapes">
-        <!-- Scattered all over -->
-        <div class="shape hex-1"></div>
-        <div class="shape hex-2"></div>
-        <div class="shape hex-3"></div>
-        <div class="shape hex-4"></div>
-        <div class="shape hex-5"></div>
-        <div class="shape hex-6"></div>
-        <div class="shape hex-7"></div>
-        <div class="shape hex-8"></div>
-        <div class="shape hex-9"></div>
-        <div class="shape hex-10"></div>
-        
-        <div class="shape tri-1"></div>
-        <div class="shape tri-2"></div>
-        <div class="shape tri-3"></div>
-        <div class="shape tri-4"></div>
-        <div class="shape tri-5"></div>
-        <div class="shape tri-6"></div>
-        <div class="shape tri-7"></div>
-        <div class="shape tri-8"></div>
-        <div class="shape tri-9"></div>
-        <div class="shape tri-10"></div>
-        
-        <div class="shape square-1"></div>
-        <div class="shape square-2"></div>
-        <div class="shape square-3"></div>
-        <div class="shape square-4"></div>
-        <div class="shape square-5"></div>
-        <div class="shape square-6"></div>
-        <div class="shape square-7"></div>
-        <div class="shape square-8"></div>
-        <div class="shape square-9"></div>
-        <div class="shape square-10"></div>
-        
-        <div class="shape line-1"></div>
-        <div class="shape line-2"></div>
-        <div class="shape line-3"></div>
-        <div class="shape line-4"></div>
-        <div class="shape line-5"></div>
-        <div class="shape line-6"></div>
-        <div class="shape line-7"></div>
-        <div class="shape line-8"></div>
-        <div class="shape line-9"></div>
-        <div class="shape line-10"></div>
-    </div>
-    
     <div id="app">
         <header>
             <h1>Shadow Muscle</h1>
@@ -62,12 +20,12 @@
             <div id="rank">Rang E - Survivant Potentiel</div>
             <div id="streak" style="font-size: 0.9em; color: rgba(0,217,255,0.7); margin-top: 8px;">🔥 Streak: <span id="streakCount">0</span></div>
         </header>
-        
+
         <div id="xpBar">
             <div id="xpProgress"></div>
             <span id="xpText">0 / 500 XP</span>
         </div>
-        
+
         <section id="stats">
             <h2>Stats</h2>
             <div class="stat-grid">
@@ -78,11 +36,11 @@
                 <div class="stat"><span>Aura</span><span id="aura">1</span></div>
             </div>
         </section>
-        
+
         <section id="missions">
             <h2>Missions</h2>
             
-            <h3 style="color: #00d9ff; margin-top: 20px; margin-bottom: 10px;">📅 Quotidiennes (Rang Actuel)</h3>
+            <h3 style="color: #00d9ff; margin-top: 20px; margin-bottom: 10px;">📅 Quotidiennes</h3>
             <div id="dailyMissions"></div>
             
             <h3 style="color: #ff7a18; margin-top: 20px; margin-bottom: 10px;">🔥 Hebdomadaires</h3>
@@ -98,7 +56,7 @@
             <button id="addMission">Ajouter</button>
             <button id="enableNotifs" style="width: 100%; background: linear-gradient(90deg, #b700ff, #00d9ff); font-size: 0.9em; padding: 12px; margin-top: 16px;">🔔 Activer les notifications</button>
         </section>
-        
+
         <section id="levelUpPopup" class="hidden">
             <div class="popup-content">
                 <h2>LEVEL UP !</h2>
@@ -107,5 +65,7 @@
             </div>
         </section>
     </div>
-    
-app.js?v=3.1">
+
+    <script src="app.js?v=3.1"></script>
+</body>
+</html>
