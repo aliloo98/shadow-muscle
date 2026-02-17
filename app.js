@@ -22,10 +22,11 @@ class ShadowMuscle {
     init() {
         this.loadData();
         this.registerSW();
-        this.updateUI();
         this.generateDailyMissions();
         this.generateWeeklyMissions();
         this.generateMonthlyMissions();
+        this.updateUI();
+        
         this.bindEvents();
         this.updateDaily();
         this.showDailYGreeting();
