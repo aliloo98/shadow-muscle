@@ -1514,3 +1514,281 @@ button:focus-visible, input:focus-visible {
         transition-duration: 0.01ms !important;
     }
 }
+
+
+/* ===== EFFETS ÉPIQUES ULTRA PREMIUM (V3.0) ===== */
+
+/* Glitch cyberpunk sur le titre principal */
+h1 {
+    position: relative;
+    text-shadow: 0.05em 0 0 rgba(255,0,0,0.75),
+                -0.025em -0.05em 0 rgba(0,255,0,0.75),
+                0.025em 0.05em 0 rgba(0,0,255,0.75);
+    animation: glitch 500ms infinite;
+}
+
+@keyframes glitch {
+    0% { text-shadow: 0.05em 0 0 rgba(255,0,0,0.75), -0.05em -0.025em 0 rgba(0,255,0,0.75), -0.025em 0.05em 0 rgba(0,0,255,0.75); }
+    14% { text-shadow: 0.05em 0 0 rgba(255,0,0,0.75), -0.05em -0.025em 0 rgba(0,255,0,0.75), -0.025em 0.05em 0 rgba(0,0,255,0.75); }
+    15% { text-shadow: -0.05em -0.025em 0 rgba(255,0,0,0.75), 0.025em 0.025em 0 rgba(0,255,0,0.75), -0.05em -0.05em 0 rgba(0,0,255,0.75); }
+    49% { text-shadow: -0.05em -0.025em 0 rgba(255,0,0,0.75), 0.025em 0.025em 0 rgba(0,255,0,0.75), -0.05em -0.05em 0 rgba(0,0,255,0.75); }
+    50% { text-shadow: 0.025em 0.05em 0 rgba(255,0,0,0.75), 0.05em 0 0 rgba(0,255,0,0.75), 0 -0.05em 0 rgba(0,0,255,0.75); }
+    99% { text-shadow: 0.025em 0.05em 0 rgba(255,0,0,0.75), 0.05em 0 0 rgba(0,255,0,0.75), 0 -0.05em 0 rgba(0,0,255,0.75); }
+    100% { text-shadow: -0.025em 0 0 rgba(255,0,0,0.75), -0.025em -0.025em 0 rgba(0,255,0,0.75), -0.025em -0.05em 0 rgba(0,0,255,0.75); }
+}
+
+/* Perspective 3D sur le container principal */
+#app {
+    transform-style: preserve-3d;
+    perspective: 1000px;
+}
+
+/* Effet Glassmorphism ultra-poussé sur les cartes */
+.mission, .stat {
+    background: rgba(255, 255, 255, 0.03) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    backdrop-filter: blur(25px) saturate(180%) !important;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.8) !important;
+}
+
+/* Animation de particules flottantes épiques */
+@keyframes float-epic {
+    0% { transform: translate(0, 0) rotate(0deg); opacity: 0; }
+    20% { opacity: 0.5; }
+    80% { opacity: 0.5; }
+    100% { transform: translate(100vw, -100vh) rotate(720deg); opacity: 0; }
+}
+
+.shape {
+    animation: float-epic 15s linear infinite !important;
+}
+
+/* Traînée lumineuse sur les bords de l'écran */
+body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    border: 2px solid transparent;
+    background: linear-gradient(90deg, #00d9ff, #b700ff, #ff7a18, #00d9ff);
+    background-size: 400% 400%;
+    z-index: 9999;
+    pointer-events: none;
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask-composite: exclude;
+    animation: border-flow 8s linear infinite;
+}
+
+@keyframes border-flow {
+    0% { background-position: 0% 50%; }
+    100% { background-position: 100% 50%; }
+}
+
+/* Effet de distorsion magnétique au hover sur les boutons */
+.mission-btn:hover {
+    animation: magnetic 0.3s ease infinite;
+}
+
+@keyframes magnetic {
+    0% { transform: translate(0, 0); }
+    25% { transform: translate(2px, -2px); }
+    50% { transform: translate(-2px, 2px); }
+    75% { transform: translate(2px, 2px); }
+    100% { transform: translate(0, 0); }
+}
+
+/* Aura de puissance sur le niveau */
+#level {
+    font-size: 1.5em;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 4px;
+    color: #fff;
+    text-shadow: 0 0 10px #00d9ff, 0 0 20px #00d9ff, 0 0 40px #00d9ff;
+    animation: power-surge 2s ease-in-out infinite;
+}
+
+@keyframes power-surge {
+    0%, 100% { transform: scale(1); filter: brightness(1); }
+    50% { transform: scale(1.1); filter: brightness(1.5); }
+}
+
+/* Barre de chargement XP avec "liquide" interne */
+#xpProgress {
+    overflow: hidden;
+}
+
+#xpProgress::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+    animation: wave-flow 1.5s linear infinite;
+}
+
+@keyframes wave-flow {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+}
+
+/* Effet de néon clignotant sur les stats au hover */
+.stat:hover span:last-child {
+    animation: neon-blink 0.5s step-end infinite;
+}
+
+@keyframes neon-blink {
+    0%, 100% { color: #fff; text-shadow: 0 0 10px var(--accent-blue); }
+    50% { color: transparent; text-shadow: none; }
+}
+
+/* Transition de révélation pour les sections */
+section {
+    animation: section-reveal 1s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    opacity: 0;
+    transform: translateY(30px);
+}
+
+#stats { animation-delay: 0.2s; }
+#missions { animation-delay: 0.4s; }
+
+@keyframes section-reveal {
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Effet de bruit cyberpunk discret sur le fond */
+body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIj48ZmlsdGVyIGlkPSJuIj48ZmVUdXJidWxlbmNlIHR5cGU9ImZyYWN0YWxOb2lzZSIgYmFzZUZyZXF1ZW5jeT0iMC42NSIgbnVtT2N0YXZlcz0iMyIgc3RpdGNoVGlsZXM9InN0aXRjaCIvPjwvZmlsdGVyPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbHRlcj0idXJsKCNuKSIgb3BhY2l0eT0iMC4wNSIvPjwvc3ZnPg==');
+    pointer-events: none;
+    z-index: -1;
+}
+
+
+/* --- ULTRA-PREMIUM V3 EFFECTS --- */
+
+:root {
+    --holographic-gradient: linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0) 0%,
+        rgba(255, 255, 255, 0.05) 25%,
+        rgba(0, 217, 255, 0.1) 50%,
+        rgba(255, 0, 255, 0.05) 75%,
+        rgba(255, 255, 255, 0) 100%
+    );
+}
+
+/* Custom Scrollbar Cyberpunk */
+::-webkit-scrollbar {
+    width: 6px;
+}
+::-webkit-scrollbar-track {
+    background: var(--bg-dark);
+}
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(to bottom, var(--accent-blue), var(--accent-purple));
+    border-radius: 10px;
+    box-shadow: 0 0 10px var(--accent-blue);
+}
+
+/* Card 3D Tilt & Holographic Effect */
+.card, .stat-item, .mission-item {
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s ease !important;
+}
+
+.card:hover, .stat-item:hover, .mission-item:hover {
+    transform: translateY(-8px) scale(1.02) rotateX(2deg) rotateY(2deg);
+    box-shadow: 
+        0 20px 40px rgba(0, 0, 0, 0.4),
+        0 0 30px rgba(0, 217, 255, 0.2);
+}
+
+.card::after, .stat-item::after, .mission-item::after {
+    content: '';
+    position: absolute;
+    top: -150%;
+    left: -150%;
+    width: 400%;
+    height: 400%;
+    background: var(--holographic-gradient);
+    transform: rotate(45deg);
+    transition: 0.5s;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.card:hover::after, .stat-item:hover::after, .mission-item:hover::after {
+    top: -100%;
+    left: -100%;
+}
+
+/* Scanner Line Animation for Missions */
+.mission-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--accent-blue), transparent);
+    animation: scanner 3s linear infinite;
+    opacity: 0.3;
+    z-index: 2;
+}
+
+@keyframes scanner {
+    0% { top: 0; }
+    100% { top: 100%; }
+}
+
+/* Glitch Effect on Main Title */
+h1 {
+    position: relative;
+    text-shadow: 0.05em 0 0 rgba(255, 0, 80, 0.75),
+                -0.025em -0.05em 0 rgba(0, 255, 200, 0.75),
+                0.025em 0.05em 0 rgba(255, 255, 0, 0.75);
+    animation: glitch 500ms infinite;
+}
+
+@keyframes glitch {
+    0% { text-shadow: 0.05em 0 0 rgba(255, 0, 80, 0.75), -0.05em -0.025em 0 rgba(0, 255, 200, 0.75), -0.025em 0.05em 0 rgba(255, 255, 0, 0.75); }
+    14% { text-shadow: 0.05em 0 0 rgba(255, 0, 80, 0.75), -0.05em -0.025em 0 rgba(0, 255, 200, 0.75), -0.025em 0.05em 0 rgba(255, 255, 0, 0.75); }
+    15% { text-shadow: -0.05em -0.025em 0 rgba(255, 0, 80, 0.75), 0.025em 0.025em 0 rgba(0, 255, 200, 0.75), -0.05em -0.05em 0 rgba(255, 255, 0, 0.75); }
+    49% { text-shadow: -0.05em -0.025em 0 rgba(255, 0, 80, 0.75), 0.025em 0.025em 0 rgba(0, 255, 200, 0.75), -0.05em -0.05em 0 rgba(255, 255, 0, 0.75); }
+    50% { text-shadow: 0.025em 0.05em 0 rgba(255, 0, 80, 0.75), 0.05em 0 0 rgba(0, 255, 200, 0.75), 0 -0.05em 0 rgba(255, 255, 0, 0.75); }
+    99% { text-shadow: 0.025em 0.05em 0 rgba(255, 0, 80, 0.75), 0.05em 0 0 rgba(0, 255, 200, 0.75), 0 -0.05em 0 rgba(255, 255, 0, 0.75); }
+    100% { text-shadow: -0.025em 0 0 rgba(255, 0, 80, 0.75), -0.025em -0.025em 0 rgba(0, 255, 200, 0.75), -0.025em -0.05em 0 rgba(255, 255, 0, 0.75); }
+}
+
+/* Glassmorphism Ultra */
+.container {
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    background: rgba(13, 17, 23, 0.7) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Pulsing background glow */
+body::after {
+    content: '';
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100vw;
+    height: 100vh;
+    background: radial-gradient(circle, rgba(0, 217, 255, 0.05) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: -2;
+    animation: pulse-glow 10s ease-in-out infinite alternate;
+}
+
+@keyframes pulse-glow {
+    from { opacity: 0.3; transform: translate(-50%, -50%) scale(1); }
+    to { opacity: 0.8; transform: translate(-50%, -50%) scale(1.2); }
+}
