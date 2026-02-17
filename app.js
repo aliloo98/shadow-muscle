@@ -1,195 +1,327 @@
 /**
- * SHADOW MUSCLE - SYSTEM ENGINE v4.0
- * Thème : Solo Leveling / RPG
+ * SHADOW MUSCLE - SYSTEM ENGINE v4.1
+ * Corrections: IDs alignés, logique complète
  */
-
 class ShadowMuscle {
-    constructor() {
-        this.initData();
-        this.init();
+  constructor() {
+    this.initData();
+    this.init();
+  }
+
+  initData() {
+    const saved = localStorage.getItem('shadow_muscle_save');
+    if (saved) {
+      this.data = JSON.parse(saved);
+      if (!this.data.customMissions) this.data.customMissions = [];
+      if (!this.data.completedDaily) this.data.completedDaily = [];
+    } else {
+      this.data = {
+        level: 1,
+        xp: 0,
+        stats: { force: 10, endurance: 10, mental: 10, discipline: 10, aura: 10 },
+        streak: 0,
+        lastDate: null,
+        badges: [],
+        history: [],
+        customMissions: [],
+        completedDaily: []
+      };
     }
 
-    initData() {
-        const saved = localStorage.getItem('shadow_muscle_save');
-        if (saved) {
-            this.data = JSON.parse(saved);
-        } else {
-            this.data = {
-                level: 1,
-                xp: 0,
-                stats: { force: 10, endurance: 10, mental: 10, discipline: 10, aura: 10 },
-                streak: 0,
-                lastDate: null,
-                badges: [],
-                history: []
-            };
-        }
+    this.BADGES_DB = [
+      { id: 'first_step', name: 'Éveil', desc: 'Première mission complétée', icon: '⚔️', type: 'mission', req: 1 },
+      { id: 'bronze_rank', name: 'Rank E', desc: 'Niveau 5', icon: '🥉', type: 'level', req: 5 },
+      { id: 'silver_rank', name: 'Rank C', desc: 'Niveau 15', icon: '🥈', type: 'level', req: 15 },
+      { id: 'gold_rank', name: 'Rank A', desc: 'Niveau 30', icon: '🥇', type: 'level', req: 30 },
+      { id: 'shadow_lord', name: 'Monarque', desc: 'Niveau 50', icon: '👑', type: 'level', req: 50 },
+      { id: 'consistent', name: 'Régularité', desc: '7 jours de suite', icon: '🔥', type: 'streak', req: 7 }
+    ];
 
-        this.BADGES_DB = [
-            { id: 'first_step', name: 'Éveil', desc: 'Première mission complétée', icon: '⚔️', type: 'mission', req: 1 },
-            { id: 'bronze_rank', name: 'Rank E', desc: 'Atteindre le niveau 5', icon: '🥉', type: 'level', req: 5 },
-            { id: 'silver_rank', name: 'Rank C', desc: 'Atteindre le niveau 15', icon: '🥈', type: 'level', req: 15 },
-            { id: 'gold_rank', name: 'Rank A', desc: 'Atteindre le niveau 30', icon: '🥇', type: 'level', req: 30 },
-            { id: 'shadow_lord', name: 'Monarque', desc: 'Atteindre le niveau 50', icon: '👑', type: 'level', req: 50 },
-            { id: 'consistent', name: 'Régularité', desc: 'Série de 7 jours', icon: '🔥', type: 'streak', req: 7 }
-        ];
+    this.DAILY_MISSIONS = [
+      { id: 'd1', title: '50 Pompes', xp: 80, stat: 'force' },
+      { id: 'd2', title: '50 Squats', xp: 80, stat: 'endurance' },
+      { id: 'd3', title: '50 Abdos', xp: 70, stat: 'discipline' },
+      { id: 'd4', title: 'Méditation 10min', xp: 60, stat: 'aura' },
+      { id: 'd5', title: 'Lecture 20min', xp: 60, stat: 'mental' }
+    ];
 
-        this.MISSIONS = [
-            { id: 'pompes', title: '100 Pompes', xp: 40, stat: 'force' },
-            { id: 'squats', title: '100 Squats', xp: 40, stat: 'force' },
-            { id: 'abdos', title: '100 Abdos', xp: 40, stat: 'discipline' },
-            { id: 'run', title: '10km Course', xp: 100, stat: 'endurance' },
-            { id: 'lecture', title: 'Lecture 30min', xp: 30, stat: 'mental' },
-            { id: 'meditation', title: 'Méditation 10min', xp: 30, stat: 'aura' }
-        ];
+    this.WEEKLY_MISSIONS = [
+      { id: 'w1', title: '500 pompes (semaine)', xp: 300, stat: 'force' },
+      { id: 'w2', title: '500 squats (semaine)', xp: 300, stat: 'endurance' }
+    ];
+
+    this.MONTHLY_MISSIONS = [
+      { id: 'm1', title: 'Streak 7 jours', xp: 800, stat: 'discipline' },
+      { id: 'm2', title: 'Streak 30 jours', xp: 3000, stat: 'aura' }
+    ];
+  }
+
+  init() {
+    this.setupTabs();
+    this.resetDaily();
+    this.renderAll();
+    this.setupEventListeners();
+    this.checkStreak();
+    this.requestNotify();
+    console.log("System: Arise. 💀");
+  }
+
+  setupTabs() {
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const tab = btn.dataset.tab;
+        document.querySelectorAll('.tab-btn, .tab-panel').forEach(el => el.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById(tab).classList.add('active');
+      });
+    });
+  }
+
+  resetDaily() {
+    const today = new Date().toLocaleDateString('fr-FR');
+    if (this.data.lastDate !== today) {
+      this.data.completedDaily = [];
+      this.save();
     }
+  }
 
-    init() {
-        this.setupTabs();
-        this.renderAll();
-        this.setupEventListeners();
-        this.checkStreak();
-        this.requestNotify();
-        console.log("System : Initialized. System: Arise.");
+  renderAll() {
+    this.renderStatus();
+    this.renderMissions();
+    this.renderArtefacts();
+    this.renderGrimoire();
+  }
+
+  renderStatus() {
+    const levelEl = document.getElementById('user-level');
+    if (levelEl) levelEl.textContent = this.data.level;
+
+    const rankEl = document.getElementById('rank');
+    if (rankEl) rankEl.textContent = this.getRank();
+
+    const streakEl = document.getElementById('streakCount');
+    if (streakEl) streakEl.textContent = this.data.streak;
+
+    const nextXP = this.data.level * 150;
+    const percent = Math.min((this.data.xp / nextXP) * 100, 100);
+    const progressBar = document.getElementById('xpProgress');
+    if (progressBar) progressBar.style.width = percent + '%';
+
+    const xpText = document.getElementById('xpText');
+    if (xpText) xpText.textContent = `${this.data.xp} / ${nextXP} XP`;
+
+    const statsContainer = document.getElementById('stats-container');
+    if (statsContainer) {
+      statsContainer.innerHTML = Object.entries(this.data.stats).map(([key, val]) =>
+        `<div class="stat"><span>${key.toUpperCase()}</span><span>${val}</span></div>`
+      ).join('');
     }
+  }
 
-    setupTabs() {
-        document.querySelectorAll('.tab-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const tab = btn.dataset.tab;
-                document.querySelectorAll('.tab-btn, .tab-panel').forEach(el => el.classList.remove('active'));
-                btn.classList.add('active');
-                document.getElementById(tab).classList.add('active');
-            });
-        });
+  renderMissions() {
+    this.renderMissionCategory('daily', this.DAILY_MISSIONS);
+    this.renderMissionCategory('weekly', this.WEEKLY_MISSIONS);
+    this.renderMissionCategory('monthly', this.MONTHLY_MISSIONS);
+    this.renderMissionCategory('custom', this.data.customMissions);
+  }
+
+  renderMissionCategory(type, missions) {
+    const container = document.getElementById(`missions-container-${type}`);
+    if (!container) return;
+    
+    container.innerHTML = missions.map(m => {
+      const isDone = this.data.completedDaily.includes(m.id);
+      return `<div class="mission ${isDone ? 'done' : ''}">
+        <span>${m.title} <span class="xp-badge">+${m.xp} XP</span></span>
+        <button class="mission-btn" onclick="app.completeMission('${m.id}', '${type}')" ${isDone ? 'disabled' : ''}>
+          ${isDone ? '✓' : 'COMPLÉTER'}
+        </button>
+      </div>`;
+    }).join('');
+  }
+
+  renderArtefacts() {
+    const container = document.getElementById('badges-container');
+    if (!container) return;
+    
+    container.innerHTML = this.BADGES_DB.map(b => {
+      const owned = this.data.badges.includes(b.id);
+      return `<div class="badge-card ${owned ? '' : 'locked'}">
+        <div class="badge-icon">${b.icon}</div>
+        <div class="badge-name">${b.name}</div>
+        <div class="badge-desc">${b.desc}</div>
+      </div>`;
+    }).join('');
+  }
+
+  renderGrimoire() {
+    const container = document.getElementById('history-container');
+    if (!container) return;
+    
+    container.innerHTML = this.data.history.slice(-20).reverse().map(h =>
+      `<div class="history-day ${h.success ? 'success' : ''}">
+        <span class="history-date">${h.date}</span>
+        <span>${h.text}</span>
+        <span style="color:var(--neon-blue)">+${h.xp} XP</span>
+      </div>`
+    ).join('');
+  }
+
+  completeMission(id, type) {
+    const missions = type === 'daily' ? this.DAILY_MISSIONS :
+                     type === 'weekly' ? this.WEEKLY_MISSIONS :
+                     type === 'monthly' ? this.MONTHLY_MISSIONS :
+                     this.data.customMissions;
+    
+    const mission = missions.find(m => m.id === id);
+    if (!mission || this.data.completedDaily.includes(id)) return;
+
+    this.data.xp += mission.xp;
+    this.data.stats[mission.stat] += 2;
+    this.data.completedDaily.push(id);
+    
+    this.addHistory(`${mission.title} accomplie`, mission.xp);
+    this.checkLevelUp();
+    this.checkBadges();
+    this.save();
+    this.renderAll();
+    this.showRPMessage(`Mission accomplie ! +${mission.xp} XP, +2 ${mission.stat.toUpperCase()}`);
+  }
+
+  checkLevelUp() {
+    const nextXP = this.data.level * 150;
+    if (this.data.xp >= nextXP) {
+      this.data.level++;
+      this.data.xp -= nextXP;
+      Object.keys(this.data.stats).forEach(s => this.data.stats[s] += 3);
+      this.showLevelUpPopup();
+      this.checkLevelUp();
     }
+  }
 
-    renderAll() {
-        this.renderStatus();
-        this.renderPortails();
-        this.renderArtefacts();
-        this.renderGrimoire();
-    }
+  checkBadges() {
+    this.BADGES_DB.forEach(b => {
+      if (this.data.badges.includes(b.id)) return;
+      let met = false;
+      if (b.type === 'level' && this.data.level >= b.req) met = true;
+      if (b.type === 'mission' && this.data.history.length >= b.req) met = true;
+      if (b.type === 'streak' && this.data.streak >= b.req) met = true;
+      
+      if (met) {
+        this.data.badges.push(b.id);
+        this.showBadgePopup(b);
+      }
+    });
+  }
 
-    renderStatus() {
-        const levelEl = document.getElementById('user-level');
-        if (levelEl) levelEl.textContent = this.data.level;
-        
-        const nextXP = this.data.level * 150;
-        const percent = Math.min((this.data.xp / nextXP) * 100, 100);
-        const fill = document.querySelector('.progress-fill');
-        if (fill) fill.style.width = percent + '%';
-        
-        const statsContainer = document.getElementById('stats-container');
-        if (statsContainer) {
-            statsContainer.innerHTML = Object.entries(this.data.stats).map(([key, val]) => 
-                '<div class="stat-card"><div class="stat-label">' + key.toUpperCase() + '</div><div class="stat-value">' + val + '</div></div>'
-            ).join('');
-        }
-    }
+  getRank() {
+    const l = this.data.level;
+    if (l >= 50) return 'Shadow Monarch';
+    if (l >= 30) return 'A - Élite';
+    if (l >= 15) return 'C - Chasseur';
+    if (l >= 5) return 'E - Débutant';
+    return 'E - Novice';
+  }
 
-    renderPortails() {
-        const container = document.getElementById('missions-container');
-        if (container) {
-            container.innerHTML = this.MISSIONS.map(m => 
-                '<div class="mission-card"><div class="mission-info"><h3>' + m.title + '</h3><p>+' + m.xp + ' XP | +1 ' + m.stat + '</p></div>' +
-                '<button class="btn-action" onclick="app.completeMission(\'' + m.id + '\')">COMPLÉTER</button></div>'
-            ).join('');
-        }
-    }
+  addHistory(text, xp) {
+    const date = new Date().toLocaleDateString('fr-FR');
+    this.data.history.push({ date, text, xp, success: true });
+  }
 
-    renderArtefacts() {
-        const container = document.getElementById('badges-container');
-        if (container) {
-            container.innerHTML = this.BADGES_DB.map(b => {
-                const owned = this.data.badges.includes(b.id);
-                return '<div class="artefact-card ' + (owned ? '' : 'locked') + '"><div class="artefact-icon">' + b.icon + '</div>' +
-                       '<div class="artefact-name">' + b.name + '</div><div class="artefact-desc">' + b.desc + '</div></div>';
-            }).join('');
-        }
-    }
-
-    renderGrimoire() {
-        const container = document.getElementById('history-container');
-        if (container) {
-            container.innerHTML = this.data.history.slice(-14).reverse().map(h => 
-                '<div class="history-item"><span>[' + h.date + ']</span><span>' + h.text + '</span><span style="color:var(--neon-blue)">+' + h.xp + ' XP</span></div>'
-            ).join('');
-        }
-    }
-
-    completeMission(id) {
-        const m = this.MISSIONS.find(x => x.id === id);
-        if (!m) return;
-
-        this.data.xp += m.xp;
-        this.data.stats[m.stat]++;
-        
-        this.addHistory('Mission accomplie : ' + m.title, m.xp);
-        this.checkLevelUp();
-        this.checkBadges();
-        this.save();
-        this.renderAll();
-        this.showRPMessage('Mission accomplie. Vous avez gagné ' + m.xp + ' XP et +1 en ' + m.stat + '.');
-    }
-
-    checkLevelUp() {
-        const nextXP = this.data.level * 150;
-        if (this.data.xp >= nextXP) {
-            this.data.level++;
-            this.data.xp -= nextXP;
-            Object.keys(this.data.stats).forEach(s => this.data.stats[s] += 2);
-            this.showRPMessage('LEVEL UP ! Niveau ' + this.data.level + '. Vos limites ont été repoussées.');
-            this.checkLevelUp();
-        }
-    }
-
-    checkBadges() {
-        this.BADGES_DB.forEach(b => {
-            if (this.data.badges.includes(b.id)) return;
-            let met = false;
-            if (b.type === 'level' && this.data.level >= b.req) met = true;
-            if (b.type === 'mission' && this.data.history.length >= b.req) met = true;
-            if (b.type === 'streak' && this.data.streak >= b.req) met = true;
-            
-            if (met) {
-                this.data.badges.push(b.id);
-                this.showRPMessage('NOUVEL ARTEFACT : ' + b.name + ' ! ' + b.icon);
-            }
-        });
-    }
-
-    addHistory(text, xp) {
-        const date = new Date().toLocaleDateString('fr-FR');
-        this.data.history.push({ date, text, xp });
-    }
-
-    save() {
-        localStorage.setItem('shadow_muscle_save', JSON.stringify(this.data));
-    }
-
-    checkStreak() {
-        const today = new Date().toLocaleDateString();
-        if (this.data.lastDate === today) return;
+  checkStreak() {
+    const today = new Date().toLocaleDateString('fr-FR');
+    if (this.data.lastDate && this.data.lastDate !== today) {
+      const yesterday = new Date();
+      yesterday.setDate(yesterday.getDate() - 1);
+      const yesterdayStr = yesterday.toLocaleDateString('fr-FR');
+      
+      if (this.data.lastDate === yesterdayStr) {
         this.data.streak++;
-        this.data.lastDate = today;
+      } else {
+        this.data.streak = 0;
+      }
+    }
+    this.data.lastDate = today;
+    this.save();
+  }
+
+  showRPMessage(msg) {
+    const rpEl = document.getElementById('rpMessages');
+    if (rpEl) {
+      rpEl.innerHTML = `<div class="rp-message">${msg}</div>`;
+      setTimeout(() => rpEl.innerHTML = '', 4000);
+    }
+  }
+
+  showLevelUpPopup() {
+    const popup = document.getElementById('levelUpPopup');
+    const text = document.getElementById('levelUpText');
+    if (popup && text) {
+      text.textContent = `Niveau ${this.data.level} ! Rang: ${this.getRank()}`;
+      popup.classList.remove('hidden');
+    }
+  }
+
+  showBadgePopup(badge) {
+    const popup = document.getElementById('badgePopup');
+    const text = document.getElementById('badgePopupText');
+    if (popup && text) {
+      text.textContent = `${badge.icon} ${badge.name} débloqué !`;
+      popup.classList.remove('hidden');
+    }
+  }
+
+  setupEventListeners() {
+    const closePopup = document.getElementById('closePopup');
+    if (closePopup) {
+      closePopup.onclick = () => {
+        document.getElementById('levelUpPopup').classList.add('hidden');
+      };
+    }
+
+    const closeBadgePopup = document.getElementById('closeBadgePopup');
+    if (closeBadgePopup) {
+      closeBadgePopup.onclick = () => {
+        document.getElementById('badgePopup').classList.add('hidden');
+      };
+    }
+
+    const addMission = document.getElementById('addMission');
+    const newMissionInput = document.getElementById('newMission');
+    if (addMission && newMissionInput) {
+      addMission.onclick = () => {
+        const text = newMissionInput.value.trim();
+        if (!text) return;
+        
+        const newMission = {
+          id: 'c' + Date.now(),
+          title: text,
+          xp: 200,
+          stat: 'force'
+        };
+        
+        this.data.customMissions.push(newMission);
+        newMissionInput.value = '';
         this.save();
+        this.renderAll();
+      };
     }
 
-    showRPMessage(msg) {
-        const div = document.createElement('div');
-        div.className = 'rp-overlay';
-        div.innerHTML = '<div class="rp-box"><p>' + msg + '</p><button onclick="this.parentElement.parentElement.remove()">ACCEPTER</button></div>';
-        document.body.appendChild(div);
+    const enableNotifs = document.getElementById('enableNotifs');
+    if (enableNotifs) {
+      enableNotifs.onclick = () => this.requestNotify();
     }
+  }
 
-    setupEventListeners() {}
-
-    requestNotify() {
-        if ("Notification" in window && Notification.permission === "default") {
-            Notification.requestPermission();
-        }
+  requestNotify() {
+    if ("Notification" in window && Notification.permission === "default") {
+      Notification.requestPermission();
     }
+  }
+
+  save() {
+    localStorage.setItem('shadow_muscle_save', JSON.stringify(this.data));
+  }
 }
 
 const app = new ShadowMuscle();
